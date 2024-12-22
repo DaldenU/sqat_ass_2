@@ -1,4 +1,4 @@
-package com.example;
+package com.Andasov;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

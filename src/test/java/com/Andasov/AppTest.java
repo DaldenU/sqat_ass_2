@@ -1,4 +1,4 @@
-package com.example;
+package com.Andasov;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll; // Import AfterAll annotation
