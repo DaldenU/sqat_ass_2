@@ -1,14 +1,18 @@
 package com.Andasov;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
+import java.util.NoSuchElementException;
 
 public class App {
     private WebDriver driver;
@@ -18,7 +22,6 @@ public class App {
     }
 
     public App() {
-        // Set the path to your ChromeDriver executable
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\Andasov Temirlan\\Downloads\\chromedriver-win64\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -70,6 +73,7 @@ public class App {
     }
 
     public void flightBooking() {
+
         driver.get("https://www.blazedemo.com/");
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -89,7 +93,7 @@ public class App {
         WebElement submitButton = driver.findElement(By.cssSelector("input.btn.btn-primary[value='Find Flights']"));
         submitButton.click();
 
-        WebElement submitButton2 = driver.findElement(By.cssSelector("input.btn.btn-small[value='Choose This Flight']"));
+        WebElement submitButton2 = driver.findElement(By.xpath("/html/body/div[2]/table/tbody/tr[2]/td[1]/input"));
         submitButton2.click();
 
         WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@id='inputName']")));
@@ -127,5 +131,104 @@ public class App {
 
         WebElement submitButton3 = driver.findElement(By.cssSelector("input.btn.btn-primary[value='Purchase Flight']"));
         submitButton3.click();
+    }
+
+    public void waitVariations() {
+        try {
+            driver.get("https://www.twitch.tv/");
+
+            // 1. Implicit Wait
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+            WebElement implicitElement = driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[1]/nav/div/div[1]/div[2]/div/div/div[1]/a"));
+            System.out.println("Implicit Wait Element Text: " + implicitElement.getText());
+            implicitElement.click();
+
+            // 2. Explicit Wait
+            WebDriverWait explicitWait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebElement explicitElement = explicitWait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"browse-root-main-content\"]/div[4]/div/div[1]/div[5]/div/div/div/div/div[1]/div/a")));
+            System.out.println("Explicit Wait Element Text: " + explicitElement.getText());
+            explicitElement.click();
+
+            // 3. Fluent Wait
+            FluentWait<WebDriver> fluentWait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(20))
+                    .pollingEvery(Duration.ofSeconds(2))
+                    .ignoring(NoSuchElementException.class);
+
+            WebElement fluentElement = fluentWait.until(
+                    webDriver -> webDriver.findElement(By.xpath("//*[@id=\"directory-game-main-content\"]/div[1]/div[2]/div/div[2]/div[4]/div[2]/a")));
+            System.out.println("Fluent Wait Element Text: " + fluentElement.getText());
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+
+    public void actionsInWeb() {
+        driver.get("https://warframe.fandom.com/wiki/WARFRAME_Wiki");
+
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement hover1 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div[4]/div[2]/header/nav/ul/li[3]/div[1]")));
+        
+        Actions actions = new Actions(driver);
+        actions.moveToElement(hover1).perform();
+
+        WebElement hover2 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div[4]/div[2]/header/nav/ul/li[3]/div[2]/ul/li[3]/a")));
+        
+        actions.moveToElement(hover2).perform();
+
+        WebElement click1 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div[4]/div[2]/header/nav/ul/li[3]/div[2]/ul/li[3]/div/ul/li[4]/a")));
+        click1.click();
+
+        WebElement link1 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"mw-content-text\"]/div[1]/div[4]/div[1]/a[2]")));
+
+        actions.contextClick(link1).perform();
+
+        WebElement searchField = driver.findElement(By.xpath("//*[@id=\"global-top-navigation\"]/div[1]/div/input"));
+        actions.keyDown(Keys.SHIFT).click(searchField).sendKeys("Gauss").keyUp(Keys.SHIFT).sendKeys(Keys.ENTER).perform();
+        
+        WebElement link2 = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.unified-search__result__title")));
+        actions.moveToElement(link2).doubleClick().perform();
+
+        WebElement hover1Element = driver.findElement(By.xpath("//*[@id=\"mw-content-text\"]/div[1]/div[3]/div/div[2]/div/p[4]"));
+        actions.moveToElement(hover1Element).click().perform();
+
+    }
+
+    public void selectOptions() {
+        driver.get("https://www.ebay.com/");
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+
+        WebElement advSearch = driver.findElement(By.xpath("//*[@id=\"gh-as-a\"]"));
+        advSearch.click();
+
+        WebElement multiselect1 = driver.findElement(By.xpath("//*[@id=\"s0-1-17-4[0]-7[3]-_sacat\"]")); 
+        Select select1 = new Select(multiselect1);
+
+        select1.selectByVisibleText("Книги и журналы");
+
+        WebElement multiselect2 = driver.findElement(By.xpath("//*[@id=\"s0-1-17-5[5]-3[@field[]]-1[0]-_ftrt\"]")); 
+        Select select2 = new Select(multiselect2);
+
+        select2.selectByIndex(1);
+
+        WebElement multiselect3 = driver.findElement(By.xpath("//*[@id=\"s0-1-17-5[5]-3[@field[]]-1[1]-_ftrv\"]")); 
+        Select select3 = new Select(multiselect3);
+
+        select3.selectByValue("12");
+
+        java.util.List<WebElement> selectedOptions = select2.getAllSelectedOptions();
+        for (WebElement option : selectedOptions) {
+            System.out.println("Selected Option: " + option.getText());
+        }
+
+        if (select2.getFirstSelectedOption().getText().equals("Завершающиеся через более чем")) {
+            System.out.println("Завершающиеся через более чем is selected.");
+        } else {
+            System.out.println("Завершающиеся через более чем is not selected.");
+        }
     }
 }
